@@ -1,85 +1,76 @@
-# Orion-X Project Setup Guide
+# 🚀 Orion-X: The AI-Powered Learning Ecosystem
 
-This guide will help you set up and run the **Orion-X** project on your local machine.
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
 
-## Prerequisites
-Before you begin, ensure you have the following installed:
-- [Python 3.9+](https://www.python.org/downloads/)
-- [Node.js (v18+)](https://nodejs.org/)
-- [PostgreSQL](https://www.postgresql.org/download/)
-
----
-
-## 1. Backend Setup (FastAPI)
-
-1.  **Navigate to the backend directory:**
-    ```bash
-    cd backend
-    ```
-
-2.  **Create a virtual environment:**
-    ```bash
-    python -m venv venv
-    ```
-
-3.  **Activate the virtual environment:**
-    - **Windows:** `venv\Scripts\activate`
-    - **Mac/Linux:** `source venv/bin/activate`
-
-4.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5.  **Environment Variables:**
-    - Create a file named `.env` in the `backend/` folder.
-    - Copy the contents from `.env.example` and fill in your details (Database credentials, API keys).
-
-6.  **Database Setup:**
-    - Ensure PostgreSQL is running.
-    - Create a database named `orion_db` (or whatever you specify in `.env`).
-
-7.  **Run the Backend:**
-    ```bash
-    uvicorn app.main:app --reload
-    ```
-    The backend will be available at `http://127.0.0.1:8000`.
+**Orion-X** is a cutting-edge Learning Management System (LMS) that leverages Generative AI to transform static PDF modules into interactive, personalized learning experiences. Designed for both students and teachers, it automates the creation of study paths and quizzes while providing an intelligent AI Tutor to answer real-time questions based on course materials.
 
 ---
 
-## 2. Frontend Setup (React + Vite)
+## ✨ Key Features
 
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd ../frontend
-    ```
+### 👨‍🏫 For Teachers
+*   **Smart Content Ingestion**: Upload PDF modules directly to Cloudinary. The system automatically extracts text using `PyMuPDF`.
+*   **AI Quiz Architect**: Generate comprehensive multiple-choice quizzes in seconds based on uploaded notes using **Google Gemini 2.0 Flash**.
+*   **Virtual Classrooms**: Launch instant video meetings via **Jitsi Meet** integration.
+*   **Performance Analytics**: Gain insights into student performance with automated scoring and analytics.
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-
-3.  **Run the Frontend:**
-    ```bash
-    npm run dev
-    ```
-    The frontend will be available at `http://localhost:5173`.
+### 🎓 For Students
+*   **Personalized Study Paths**: Get an AI-generated roadmap for every module, including summaries, key terms, and estimated study times.
+*   **Interactive AI Tutor**: Chat with an AI that specifically knows *your* course materials (RAG - Retrieval-Augmented Generation).
+*   **Real-time Quizzing**: Take timed quizzes and get instant feedback on your progress.
+*   **Sleek UI/UX**: Modern, responsive dashboard built with **Framer Motion** for smooth transitions and **Lucide React** for intuitive iconography.
 
 ---
 
-## 3. How to Share this Project
+## 🛠️ Technical Stack
 
-### Option A: GitHub (Recommended)
-1.  Create a new repository on GitHub.
-2.  Initialize git in this folder: `git init`
-3.  Add all files: `git add .` (The `.gitignore` files will automatically exclude large folders like `node_modules` and `venv`).
-4.  Commit: `git commit -m "Initial commit"`
-5.  Push to GitHub.
-6.  Your friend can then run `git clone <repository_url>` and follow this guide.
+-   **Frontend**: React 19, Vite, Framer Motion, Axios, Tailwind-ready CSS.
+-   **Backend**: FastAPI (Python 3.12), SQLAlchemy (ORM).
+-   **AI/ML**: Google Gemini Pro (Generative AI), RAG Implementation for Tutor.
+-   **Database**: PostgreSQL / Supabase.
+-   **Storage**: Cloudinary Cloud Storage.
+-   **Video**: Jitsi Meet Integration.
 
-### Option B: Zip File
-If you send a Zip file, **DELETE** these folders first to keep the file size small:
-- `backend/venv/`
-- `frontend/node_modules/`
-- `frontend/dist/`
-Your friend will recreate them using the install commands above.
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+- Python 3.9+
+- Node.js (v18+)
+- PostgreSQL
+
+### 📦 Backend Setup
+1. `cd backend`
+2. `python -m venv venv`
+3. `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux)
+4. `pip install -r requirements.txt`
+5. Create a `.env` file based on `.env.example` and add your API keys.
+6. `uvicorn app.main:app --reload`
+
+### 🎨 Frontend Setup
+1. `cd frontend`
+2. `npm install`
+3. `npm run dev`
+
+---
+
+## 🧠 Project Architecture
+
+Orion-X follows a decoupled architecture:
+1.  **Client-Side**: A state-driven React application that communicates with the API via Axios.
+2.  **API-Side**: A high-performance FastAPI server handling business logic, authentication (JWT), and AI orchestrations.
+3.  **Data Layer**: A relational PostgreSQL database managed via SQLAlchemy for robust consistency.
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
