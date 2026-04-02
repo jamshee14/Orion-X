@@ -6,12 +6,15 @@ from . import models, schemas, auth, database
 from .database import engine
 from sqlalchemy import text
 from datetime import datetime
-import cloudinary
-import cloudinary.uploader
+from .config import settings
+from supabase import create_client, Client
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
-import google.generativeai as genai
-from .config import settings
+
+supabase: Optional[Client] = None
+if settings.supabase_url and settings.supabase_key:
+    supabase = create_client(settings.supabase_url, settings.supabase_key)
 
 load_dotenv()
 
@@ -19,16 +22,9 @@ import fitz  # PyMuPDF
 import json
 import re
 
-# --- CLOUDINARY CONFIG ---
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-)
-
 # --- GEMINI AI CONFIG ---
 genai.configure(api_key=settings.gemini_api_key)
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash") # Updated model to a modern version
 
 models.Base.metadata.create_all(bind=engine)
 with engine.connect() as conn:
@@ -273,18 +269,21 @@ async def create_note(
                 with fitz.open(stream=file_bytes, filetype="pdf") as doc:
                     extracted_content = "".join(page.get_text() for page in doc)
             
-            # Upload to Cloudinary
-            resource_type = "raw" if file.filename.endswith(".pdf") else "auto"
-            upload_result = cloudinary.uploader.upload(
-                file.file, 
-                resource_type=resource_type,
-                folder="orion_notes",
-                use_filename=True,
-                unique_filename=True
-            )
-            file_url = upload_result.get("secure_url")
+            # Upload to Supabase Storage
+            if supabase:
+                file_path = f"orion_notes/{int(datetime.utcnow().timestamp())}_{file.filename}"
+                # Supabase storage expects bytes (UploadFile.read() returns bytes)
+                supabase.storage.from_("orion-x").upload(
+                    path=file_path,
+                    file=file_bytes,
+                    file_options={"content-type": file.content_type}
+                )
+                file_url = supabase.storage.from_("orion-x").get_public_url(file_path)
+            else:
+                raise HTTPException(status_code=500, detail="Supabase Storage not configured. Please check your .env file.")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"File processing failed: {e}")
+            print(f"File upload error: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to upload file to Supabase: {str(e)}")
 
     new_note = models.Note(
         title=title,

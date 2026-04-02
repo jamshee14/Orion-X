@@ -10,5 +10,5 @@ python-multipart
 python-dotenv
 SQLAlchemy
 uvicorn
-cloudinary
 PyMuPDF
+supabase
