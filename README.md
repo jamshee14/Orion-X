@@ -46,7 +46,7 @@ If you just want to run the project without typing any commands:
 4.  The script will automatically set up the virtual environment, install dependencies for both frontend and backend, and launch the application!
 
 > [!IMPORTANT]
-> **API Keys:** Since safety is paramount, the `.env` file containing API keys is not pushed to GitHub. You should share your `backend/.env` file with your friend separately and tell her to place it inside the `backend` folder.
+> **API Keys:** The `.env` file is already included in this repository to make setup zero-config for friends. Please be aware that this means anyone with access to the repo can see your API keys.
 
 ---
 
