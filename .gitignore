@@ -1,7 +1,7 @@
 # Root gitignore to protect entire project
 
 # Backend
-backend/.env
+# backend/.env
 backend/venv/
 backend/__pycache__/
 backend/*.pyc
