@@ -7,14 +7,28 @@ from .database import engine
 from sqlalchemy import text
 from datetime import datetime
 from .config import settings
-from supabase import create_client, Client
+import httpx
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 
-supabase: Optional[Client] = None
-if settings.supabase_url and settings.supabase_key:
-    supabase = create_client(settings.supabase_url, settings.supabase_key)
+# Supabase Storage helper
+async def upload_to_supabase(file_path: str, file_bytes: bytes, content_type: str):
+    if not settings.supabase_url or not settings.supabase_key:
+        return None
+    
+    url = f"{settings.supabase_url}/storage/v1/object/orion-x/{file_path}"
+    headers = {
+        "Authorization": f"Bearer {settings.supabase_key}",
+        "apikey": settings.supabase_key,
+        "Content-Type": content_type
+    }
+    
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(url, content=file_bytes, headers=headers)
+        if resp.status_code == 200:
+            return f"{settings.supabase_url}/storage/v1/object/public/orion-x/{file_path}"
+        return None
 
 load_dotenv()
 
@@ -269,18 +283,12 @@ async def create_note(
                 with fitz.open(stream=file_bytes, filetype="pdf") as doc:
                     extracted_content = "".join(page.get_text() for page in doc)
             
-            # Upload to Supabase Storage
-            if supabase:
-                file_path = f"orion_notes/{int(datetime.utcnow().timestamp())}_{file.filename}"
-                # Supabase storage expects bytes (UploadFile.read() returns bytes)
-                supabase.storage.from_("orion-x").upload(
-                    path=file_path,
-                    file=file_bytes,
-                    file_options={"content-type": file.content_type}
-                )
-                file_url = supabase.storage.from_("orion-x").get_public_url(file_path)
-            else:
-                raise HTTPException(status_code=500, detail="Supabase Storage not configured. Please check your .env file.")
+            # Upload to Supabase Storage via REST API (httpx)
+            file_path = f"orion_notes/{int(datetime.utcnow().timestamp())}_{file.filename}"
+            file_url = await upload_to_supabase(file_path, file_bytes, file.content_type)
+            
+            if not file_url:
+                raise HTTPException(status_code=500, detail="Failed to upload file to Supabase Storage. Please check your credentials and bucket.")
         except Exception as e:
             print(f"File upload error: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to upload file to Supabase: {str(e)}")

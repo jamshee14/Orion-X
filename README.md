@@ -12,7 +12,7 @@
 ## ✨ Key Features
 
 ### 👨‍🏫 For Teachers
-*   **Smart Content Ingestion**: Upload PDF modules directly to Cloudinary. The system automatically extracts text using `PyMuPDF`.
+*   **Smart Content Ingestion**: Upload PDF modules directly to **Supabase Storage**. The system automatically extracts text using `PyMuPDF`.
 *   **AI Quiz Architect**: Generate comprehensive multiple-choice quizzes in seconds based on uploaded notes using **Google Gemini 2.0 Flash**.
 *   **Virtual Classrooms**: Launch instant video meetings via **Jitsi Meet** integration.
 *   **Performance Analytics**: Gain insights into student performance with automated scoring and analytics.
@@ -30,23 +30,37 @@
 -   **Frontend**: React 19, Vite, Framer Motion, Axios, Tailwind-ready CSS.
 -   **Backend**: FastAPI (Python 3.12), SQLAlchemy (ORM).
 -   **AI/ML**: Google Gemini Pro (Generative AI), RAG Implementation for Tutor.
--   **Database**: PostgreSQL / Supabase.
--   **Storage**: Cloudinary Cloud Storage.
+-   **Database**: PostgreSQL hosted on **Supabase**.
+-   **Storage**: **Supabase Bucket** (replacing Cloudinary).
 -   **Video**: Jitsi Meet Integration.
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Installation & Setup (One-Click)
+
+If you just want to run the project without typing any commands:
+
+1.  Clone the repository or download the ZIP from GitHub.
+2.  **Make sure you have [Python](https://www.python.org/downloads/) and [Node.js](https://nodejs.org/) installed.**
+3.  Double-click the `RUN_ME.bat` file in the main folder.
+4.  The script will automatically set up the virtual environment, install dependencies for both frontend and backend, and launch the application!
+
+> [!IMPORTANT]
+> **API Keys:** Since safety is paramount, the `.env` file containing API keys is not pushed to GitHub. You should share your `backend/.env` file with your friend separately and tell her to place it inside the `backend` folder.
+
+---
+
+## 🛠️ Manual CLI Setup (For Developers)
 
 ### Prerequisites
 - Python 3.9+
 - Node.js (v18+)
-- PostgreSQL
+- PostgreSQL (not needed if using the Supabase remote DB)
 
 ### 📦 Backend Setup
 1. `cd backend`
 2. `python -m venv venv`
-3. `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux)
+3. `venv\Scripts\activate` (Windows)
 4. `pip install -r requirements.txt`
 5. Create a `.env` file based on `.env.example` and add your API keys.
 6. `uvicorn app.main:app --reload`
