@@ -290,7 +290,6 @@ const TeacherDashboard = () => {
                                             >
                                                 <div>
                                                     <span className="font-bold text-lg text-gray-800 block mb-1">{n.title}</span>
-                                                    <span className="text-sm text-gray-500">{n.content.substring(0, 80)}...</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
 

@@ -21,7 +21,7 @@ class TokenData(BaseModel):
 
 class NoteCreate(BaseModel):
     title: str
-    content: str
+    content: Optional[str] = None
     file_url: Optional[str] = None
 
 class NoteOut(BaseModel):

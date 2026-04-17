@@ -257,7 +257,6 @@ const StudentDashboard = () => {
                                             className="note-card"
                                         >
                                             <h3 className="note-card-title">{n.title}</h3>
-                                            <p className="note-card-content">{n.content.substring(0, 100)}...</p>
 
                                             <div className="note-card-footer">
                                                 {n.has_study_path ? (

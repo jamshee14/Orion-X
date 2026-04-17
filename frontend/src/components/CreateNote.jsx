@@ -4,14 +4,17 @@ import { UploadCloud, File as FileIcon, CheckCircle } from "lucide-react";
 
 const CreateNote = ({ onNoteCreated, setUploading }) => {
     const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!title || !content) {
-            setError("Title and content are required.");
+        if (!title) {
+            setError("Title is required.");
+            return;
+        }
+        if (!file) {
+            setError("Please upload a PDF file.");
             return;
         }
         setUploading(true);
@@ -19,7 +22,6 @@ const CreateNote = ({ onNoteCreated, setUploading }) => {
 
         const formData = new FormData();
         formData.append("title", title);
-        formData.append("content", content);
         if (file) {
             formData.append("file", file);
         }
@@ -27,9 +29,8 @@ const CreateNote = ({ onNoteCreated, setUploading }) => {
         try {
             const res = await postNote(formData);
             setTitle("");
-            setContent("");
             setFile(null);
-            onNoteCreated(res.data); // Pass the new note back
+            onNoteCreated(res.data);
         } catch {
             setError("Failed to create note. Please try again.");
             setUploading(false);
@@ -46,16 +47,6 @@ const CreateNote = ({ onNoteCreated, setUploading }) => {
                     placeholder="e.g., Quantum Mechanics Basics"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                />
-            </div>
-            <div className="form-group">
-                <label>Content / Description</label>
-                <textarea
-                    className="auth-input"
-                    placeholder="Write a brief description or the main content here..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    rows={4}
                 />
             </div>
             <div className="form-group">

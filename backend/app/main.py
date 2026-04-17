@@ -15,9 +15,15 @@ import os
 # Supabase Storage helper
 async def upload_to_supabase(file_path: str, file_bytes: bytes, content_type: str):
     if not settings.supabase_url or not settings.supabase_key:
+        print("DEBUG: Supabase credentials missing in settings.")
         return None
     
-    url = f"{settings.supabase_url}/storage/v1/object/orion-x/{file_path}"
+    import urllib.parse
+    # URL encode the file path to handle spaces and special characters
+    # Only encode the variable part of the path, not the bucket name
+    encoded_path = urllib.parse.quote(file_path)
+    url = f"{settings.supabase_url}/storage/v1/object/orion-x/{encoded_path}"
+    
     headers = {
         "Authorization": f"Bearer {settings.supabase_key}",
         "apikey": settings.supabase_key,
@@ -25,10 +31,18 @@ async def upload_to_supabase(file_path: str, file_bytes: bytes, content_type: st
     }
     
     async with httpx.AsyncClient() as client:
-        resp = await client.post(url, content=file_bytes, headers=headers)
-        if resp.status_code == 200:
-            return f"{settings.supabase_url}/storage/v1/object/public/orion-x/{file_path}"
-        return None
+        try:
+            resp = await client.post(url, content=file_bytes, headers=headers)
+            if resp.status_code == 200:
+                return f"{settings.supabase_url}/storage/v1/object/public/orion-x/{file_path}"
+            
+            # Log the specific error from Supabase to help the user identify bucket/permission issues
+            print(f"DEBUG: Supabase Storage Error! Status {resp.status_code}")
+            print(f"DEBUG: Response Body from Supabase: {resp.text}")
+            return None
+        except Exception as e:
+            print(f"Connection error to Supabase: {e}")
+            return None
 
 load_dotenv()
 
@@ -269,14 +283,17 @@ async def create_note(
     db: Session = Depends(database.get_db),
     user: models.User = Depends(auth.get_current_user_from_cookie),
     title: str = Form(...),
-    content: str = Form(...),
+    content: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
 ):
     if user.role != "teacher":
         raise HTTPException(status_code=403, detail="Only teachers can upload")
 
     file_url = None
-    extracted_content = content
+    extracted_content = content or ""
+
+    if not file and not content:
+        raise HTTPException(status_code=400, detail="Either content text or a PDF file is required.")
 
     if file:
         try:
