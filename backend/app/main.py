@@ -40,13 +40,19 @@ import re
 genai.configure(api_key=settings.gemini_api_key)
 model = genai.GenerativeModel("gemini-1.5-flash") # Updated model to a modern version
 
-models.Base.metadata.create_all(bind=engine)
-with engine.connect() as conn:
-    try:
+try:
+    models.Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
         conn.execute(text("ALTER TABLE IF EXISTS quizzes ADD COLUMN IF NOT EXISTS note_id INTEGER"))
         conn.commit()
-    except Exception:
-        pass
+except Exception as e:
+    print("\n" + "!" * 50)
+    print("CRITICAL ERROR: Could not connect to Supabase Database!")
+    print("Please check your internet connection or .env settings.")
+    print(f"Details: {e}")
+    print("!" * 50 + "\n")
+    # We dont exit here so the server can still try to start, 
+    # but most endpoints will fail until the DB is fixed.
 app = FastAPI()
 
 # --- MANDATORY CORS CONFIG ---
